@@ -1,12 +1,17 @@
-const Blog = require("../models/blogs")
-const asyncHandler = require("express-async-handler")
+const { QuillDeltaToHtmlConverter } = require("quill-delta-to-html");
+const Blog = require("../models/blogs");
+const Comment = require("../models/comments");
+const asyncHandler = require("express-async-handler");
 
 
 exports.create_blog = asyncHandler(async (req, res, next) => {
+    const contentDelta = JSON.parse(req.body.content);
+    const converter = new QuillDeltaToHtmlConverter(contentDelta.ops, {});
+    const html = converter.convert();
     const blog = new Blog({
-        title: "Big Boys",
-        date: 12/2/2001,
-        content: "you know it!",
+        title: req.body.title,
+        date: Date(),
+        content: html,
         status: "hidden"
     })
 
@@ -17,6 +22,30 @@ exports.create_blog = asyncHandler(async (req, res, next) => {
 exports.get_blogs = asyncHandler(async (req, res, next) => {
     const blogs = await Blog.find({});
 
-    console.log(blogs);
     res.send(blogs);
+})
+
+
+exports.update_blog = asyncHandler(async (req, res, next) => {
+    const blog_information = req.body._id;
+    let blog_toggle = req.body.status;
+    if (blog_toggle === "hidden") {
+        blog_toggle = "visible"
+    } else if (blog_toggle === "visible") {
+        blog_toggle = "hidden"
+    }
+    const find_blog = await Blog.findOne({_id: blog_information})
+    find_blog.status = blog_toggle;
+    await find_blog.save();
+})
+
+
+exports.delete_blog = asyncHandler(async (req, res, next) => {
+    const blog_id = req.body._id;
+    const find_blog = await Blog.findOneAndDelete({_id: blog_id});
+})
+
+exports.get_comments = asyncHandler(async (req, res, next) => {
+    const find_comments = await Comment.find({});
+    res.send(find_comments);
 })

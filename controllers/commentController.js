@@ -2,13 +2,13 @@ const Comment = require("../models/comments")
 const asyncHandler = require("express-async-handler");
 
 exports.create_comment = asyncHandler(async (req, res, next) => {
-    console.log(req.body);
     const date = Date();
     const comment = new Comment({
         author: req.body.author,
         content: req.body.content,
         date: date,
-        status: "hidden"
+        status: "hidden",
+        linkedPost: req.body.blogId
     })
 
     await comment.save();
@@ -16,13 +16,20 @@ exports.create_comment = asyncHandler(async (req, res, next) => {
 })
 
 exports.get_comment = asyncHandler(async (req, res, next) => {
-    console.log(req.body);
-    const comment = new Comment({
-        author: "your mom",
-        content: "Npot yawdw",
-        date: 10/20/1929,
-        status: "hidden"
-    })
+    const comments = await Comment.find({});
 
-    res.send(comment);
+    res.send(comments);
+})
+
+exports.update_comment = asyncHandler(async (req, res, next) => {
+    const comment_information = req.body._id;
+    let commment_toggle = req.body.status;
+    if (commment_toggle === "hidden") {
+        commment_toggle = "visible"
+    } else if (commment_toggle === "visible") {
+        commment_toggle = "hidden"
+    }
+    const find_comment = await Comment.findOne({_id: comment_information})
+    find_comment.status = commment_toggle;
+    await find_comment.save();
 })

@@ -20,6 +20,9 @@ const commentsSchema = new mongoose.Schema({
         type: String,
         enum: ["hidden", "visible"],
         default: "hidden"
+    },
+    linkedPost: {
+        type: mongoose.Schema.Types.ObjectId, ref: "Blog"
     }
 })
 
