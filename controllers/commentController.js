@@ -33,3 +33,8 @@ exports.update_comment = asyncHandler(async (req, res, next) => {
     find_comment.status = commment_toggle;
     await find_comment.save();
 })
+
+exports.delete_comment = asyncHandler(async (req, res, next) => {
+    const comment_id = req.body._id;
+    const find_comment = await Comment.findOneAndDelete({_id: comment_id});
+})
