@@ -13,7 +13,7 @@ const upload = multer();
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const app = express();
 const port = 3000;
-
+const RateLimit = require("express-rate-limit");
 const mongoose = require("mongoose");
 
 
@@ -26,6 +26,12 @@ async function main() {
     await mongoose.connect(`mongodb+srv://${process.env.DBUSER}:${process.env.PASSWD}@cluster0.n7b0nqu.mongodb.net/blog_database?retryWrites=true&w=majority`);
 }
 
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+app.use(limiter);
 app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(logger('dev'));
