@@ -19,6 +19,7 @@ const mongoose = require("mongoose");
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('trust proxy', 1); // Trust first proxy
 
 main().catch(err => console.log(err));
 
@@ -61,8 +62,7 @@ app.use(function(err, req, res, next) {
 });
 
 
+app.listen(process.env.port, () => 
+console.log(`Server running on  localhost:${port}`));
 
-app.listen(process.env.port, "0.0.0.0", function () {
-  console.log(`Server running on  "0.0.0.0":${port}`);
-});
 module.exports = app;
